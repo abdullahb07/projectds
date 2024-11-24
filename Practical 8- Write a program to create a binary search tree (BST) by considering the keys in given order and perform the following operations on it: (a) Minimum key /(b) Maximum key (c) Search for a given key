@@ -1,0 +1,85 @@
+// Write a program to create a binary search tree (BST) by considering the keys in given order and perform the following operations on it:
+(a) Minimum key / (b) Maximum key / (c) Search for a given key
+
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int key;
+    struct Node* left;
+    struct Node* right;
+};
+
+struct Node* newNode(int key) {
+    struct Node* node = (struct Node*)malloc(sizeof(struct Node));
+    node->key = key;
+    node->left = node->right = NULL;
+    return node;
+}
+
+struct Node* insert(struct Node* root, int key) {
+    if (root == NULL) {
+        return newNode(key);
+    }
+    if (key < root->key) {
+        root->left = insert(root->left, key);
+    } else {
+        root->right = insert(root->right, key);
+    }
+    return root;
+}
+
+int findMin(struct Node* root) {
+    while (root->left != NULL) {
+        root = root->left;
+    }
+    return root->key;
+}
+
+int findMax(struct Node* root) {
+    while (root->right != NULL) {
+        root = root->right;
+    }
+    return root->key;
+}
+
+struct Node* search(struct Node* root, int key) {
+    if (root == NULL || root->key == key) {
+        return root;
+    }
+    if (key < root->key) {
+        return search(root->left, key);
+    } else {
+        return search(root->right, key);
+    }
+}
+
+int main() {
+    struct Node* root = NULL;
+    int n, keyToSearch;
+    
+    printf("Enter the number of keys to insert: ");
+    scanf("%d", &n);
+
+    printf("Enter the keys:\n");
+    for (int i = 0; i < n; i++) {
+        int key;
+        scanf("%d", &key);
+        root = insert(root, key);
+    }
+
+    printf("Minimum key: %d\n", findMin(root));
+    printf("Maximum key: %d\n", findMax(root));
+
+    printf("Enter a key to search: ");
+    scanf("%d", &keyToSearch);
+    
+    struct Node* searchResult = search(root, keyToSearch);
+    if (searchResult != NULL) {
+        printf("Key %d found in the tree.\n", keyToSearch);
+    } else {
+        printf("Key %d not found in the tree.\n", keyToSearch);
+    }
+
+    return 0;
+}
