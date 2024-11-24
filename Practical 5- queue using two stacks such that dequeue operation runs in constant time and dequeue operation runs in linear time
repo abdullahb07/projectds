@@ -1,0 +1,104 @@
+// Practical 5- queue using two stacks such that dequeue operation runs in constant time and dequeue operation runs in linear time
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 100
+
+typedef struct {
+    int data[MAX];
+    int top;
+} Stack;
+
+void initStack(Stack *s) {
+    s->top = -1;
+}
+
+int isEmptyStack(Stack *s) {
+    return (s->top == -1);
+}
+
+int isFullStack(Stack *s) {
+    return (s->top == MAX - 1);
+}
+
+void push(Stack *s, int x) {
+    if (isFullStack(s)) {
+        printf("Stack Overflow\n");
+        return;
+    }
+    s->data[++s->top] = x;
+}
+
+int pop(Stack *s) {
+    if (isEmptyStack(s)) {
+        printf("Stack Underflow\n");
+        return -1;
+    }
+    return s->data[s->top--];
+}
+
+typedef struct {
+    Stack s1, s2;
+} Queue;
+
+void initQueue(Queue *q) {
+    initStack(&q->s1);
+    initStack(&q->s2);
+}
+
+void enqueue(Queue *q, int x) {
+    push(&q->s1, x);
+}
+
+int dequeue(Queue *q) {
+    if (isEmptyStack(&q->s2)) {
+        while (!isEmptyStack(&q->s1)) {
+            push(&q->s2, pop(&q->s1));
+        }
+    }
+    return pop(&q->s2);
+}
+
+int main() {
+    Queue q;
+    initQueue(&q);
+    
+    int n, value, choice;
+
+    while (1) {
+        printf("\nQueue Operations using Two Stacks:\n");
+        printf("1. Enqueue\n");
+        printf("2. Dequeue\n");
+        printf("3. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        
+        switch (choice) {
+            case 1:
+                printf("Enter value to enqueue: ");
+                scanf("%d", &value);
+                enqueue(&q, value);
+                printf("Enqueued: %d\n", value);
+                break;
+
+            case 2:
+                if (isEmptyStack(&q.s1) && isEmptyStack(&q.s2)) {
+                    printf("Queue is empty!\n");
+                } else {
+                    int dequeuedValue = dequeue(&q);
+                    printf("Dequeued: %d\n", dequeuedValue);
+                }
+                break;
+
+            case 3:
+                printf("Exiting...\n");
+                return 0;
+
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+
+    return 0;
+}
